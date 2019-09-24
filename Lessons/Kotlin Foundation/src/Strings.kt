@@ -13,7 +13,7 @@ fun main(args: Array<String>) {
 
     println()
 
-    for (char in str){
+    for (char in str) {
         println(char)
     }
 

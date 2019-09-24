@@ -21,9 +21,9 @@ fun main(args: Array<String>) {
 
     val degrees = 20
 
-    if (degrees >= 20){
+    if (degrees >= 20) {
         println("This is some nice weather")
-    } else if (degrees < 70 && degrees >= 50){
+    } else if (degrees < 70 && degrees >= 50) {
         println("Grab a sweater")
     } else {
         println("Holy crap! It's cold!")
@@ -32,20 +32,20 @@ fun main(args: Array<String>) {
     val isHungry = false
     val isBored = true
 
-    if(isHungry || isBored){
+    if (isHungry || isBored) {
         println("Let's get pizza!")
     }
 
     val x = 1
 
-    when (x){
+    when (x) {
         1 -> println("x == 1")
         2 -> println("x == 2")
         else -> println("x does not equal 1 or 2")
     }
 
-    fun vaderIsFeeling(mood: String = "angry"){
-        if (mood == "angry"){
+    fun vaderIsFeeling(mood: String = "angry") {
+        if (mood == "angry") {
             println("Run for the hills! Vader is $mood!")
         } else {
             println("Whatever you do, don't make him angry!")
