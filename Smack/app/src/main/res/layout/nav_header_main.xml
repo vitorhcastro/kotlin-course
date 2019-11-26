@@ -13,12 +13,12 @@
         android:id="@+id/userImageNavHeader"
         android:layout_width="70dp"
         android:layout_height="70dp"
-        android:layout_marginStart="4dp"
         android:layout_marginBottom="8dp"
         android:contentDescription="@string/nav_header_desc"
         android:paddingTop="@dimen/nav_header_vertical_spacing"
         app:layout_constraintBottom_toTopOf="@+id/loginBtnNav"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="@+id/loginBtnNav"
+        app:layout_constraintStart_toStartOf="@+id/loginBtnNav"
         app:srcCompat="@drawable/profiledefault" />
 
     <TextView
@@ -35,11 +35,10 @@
 
     <TextView
         android:id="@+id/userEmailNavHeader"
-        android:layout_width="0dp"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:text="hallow@teste.com"
-        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/userImageNavHeader"
         app:layout_constraintTop_toBottomOf="@+id/usernameNavHeader"
         tools:text="hallow@teste.com" />
@@ -48,12 +47,12 @@
         android:id="@+id/loginBtnNav"
         android:layout_width="wrap_content"
         android:layout_height="32dp"
-        android:layout_marginStart="24dp"
+        android:layout_marginStart="4dp"
         android:layout_marginBottom="8dp"
         android:background="@android:color/transparent"
         android:onClick="loginBtnNavClicked"
         android:text="Login"
-        android:textAlignment="viewStart"
+        android:textAlignment="center"
         android:textColor="@android:color/white"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
