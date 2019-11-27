@@ -1,9 +1,10 @@
-package com.vhcastro.smack
+package com.vhcastro.smack.controller
 
 import android.graphics.Color
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
+import com.vhcastro.smack.R
 import kotlinx.android.synthetic.main.activity_registration.*
 import java.util.*
 
