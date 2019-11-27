@@ -3,9 +3,11 @@ package com.vhcastro.smack.controller
 import android.graphics.Color
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.service.autofill.UserData
 import android.view.View
 import com.vhcastro.smack.R
 import com.vhcastro.smack.services.AuthService
+import com.vhcastro.smack.services.UserDataService
 import kotlinx.android.synthetic.main.activity_registration.*
 import java.util.*
 
@@ -48,10 +50,25 @@ class RegistrationActivity : AppCompatActivity() {
     }
 
     fun createUserBtnClicked(view: View){
-        AuthService.registerUser(this, "j@j.com", "123456") {
-            complete ->
-            if (complete){
-
+        val username = registrationUsernameText.text.toString()
+        val email = registrationEmailText.text.toString()
+        val password = registrationPasswordText.text.toString()
+        AuthService.registerUser(this, email, password) { registerSuccess ->
+            if (registerSuccess){
+                AuthService.loginUser(this, email, password) { loginSuccess ->
+                    if (loginSuccess){
+                        AuthService.createUser(this, username, email, userAvatar, avatarColor){ createSuccess ->
+                            if(createSuccess){
+                                println(UserDataService.id)
+                                println(UserDataService.name)
+                                println(UserDataService.email)
+                                println(UserDataService.avatarName)
+                                println(UserDataService.avatarColor)
+                                finish()
+                            }
+                        }
+                    }
+                }
             }
         }
     }
