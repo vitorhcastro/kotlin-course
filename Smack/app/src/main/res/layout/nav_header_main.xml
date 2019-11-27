@@ -14,11 +14,12 @@
         android:layout_width="70dp"
         android:layout_height="70dp"
         android:layout_marginBottom="8dp"
+        android:background="@android:color/transparent"
         android:contentDescription="@string/nav_header_desc"
         android:paddingTop="@dimen/nav_header_vertical_spacing"
-        app:layout_constraintBottom_toTopOf="@+id/loginBtnNav"
-        app:layout_constraintEnd_toEndOf="@+id/loginBtnNav"
-        app:layout_constraintStart_toStartOf="@+id/loginBtnNav"
+        app:layout_constraintBottom_toTopOf="@+id/loginBtnNavHeader"
+        app:layout_constraintEnd_toEndOf="@+id/loginBtnNavHeader"
+        app:layout_constraintStart_toStartOf="@+id/loginBtnNavHeader"
         app:srcCompat="@drawable/profiledefault" />
 
     <TextView
@@ -27,7 +28,6 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:paddingTop="@dimen/nav_header_vertical_spacing"
-        android:text="hallow"
         android:textAppearance="@style/TextAppearance.AppCompat.Body1"
         app:layout_constraintStart_toEndOf="@+id/userImageNavHeader"
         app:layout_constraintTop_toTopOf="@+id/userImageNavHeader"
@@ -38,13 +38,12 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
-        android:text="hallow@teste.com"
         app:layout_constraintStart_toEndOf="@+id/userImageNavHeader"
         app:layout_constraintTop_toBottomOf="@+id/usernameNavHeader"
         tools:text="hallow@teste.com" />
 
     <Button
-        android:id="@+id/loginBtnNav"
+        android:id="@+id/loginBtnNavHeader"
         android:layout_width="wrap_content"
         android:layout_height="32dp"
         android:layout_marginStart="4dp"

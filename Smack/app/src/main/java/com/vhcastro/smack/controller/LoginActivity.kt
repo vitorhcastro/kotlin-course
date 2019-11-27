@@ -14,7 +14,7 @@ class LoginActivity : AppCompatActivity() {
     }
 
     fun createUserBtnClicked(view: View){
-        var registerUserIntent = Intent(this, RegistrationActivity::class.java)
+        var registerUserIntent = Intent( this, RegistrationActivity::class.java)
         startActivity(registerUserIntent)
     }
 }
