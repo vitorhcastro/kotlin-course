@@ -15,11 +15,14 @@ import androidx.appcompat.app.AlertDialog
 import androidx.core.view.GravityCompat
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.vhcastro.smack.R
+import com.vhcastro.smack.model.Channel
 import com.vhcastro.smack.services.AuthService
+import com.vhcastro.smack.services.MessageService
 import com.vhcastro.smack.services.UserDataService
 import com.vhcastro.smack.utilities.BROADCAST_USER_DATA_CHANGED
 import com.vhcastro.smack.utilities.SOCKET_URL
 import io.socket.client.IO
+import io.socket.emitter.Emitter
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.app_bar_main.*
 import kotlinx.android.synthetic.main.nav_header_main.*
@@ -32,6 +35,8 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         setSupportActionBar(toolbar)
+        socket.connect()
+        socket.on("channelCreated", onNewChannel)
 
         val toggle = ActionBarDrawerToggle(
             this, drawer_layout, toolbar,
@@ -44,17 +49,12 @@ class MainActivity : AppCompatActivity() {
 
     override fun onResume() {
         LocalBroadcastManager.getInstance(this).registerReceiver(userDataChangedReceiver, IntentFilter(BROADCAST_USER_DATA_CHANGED))
-        socket.connect()
         super.onResume()
-    }
-
-    override fun onPause() {
-        LocalBroadcastManager.getInstance(this).unregisterReceiver(userDataChangedReceiver)
-        super.onPause()
     }
 
     override fun onDestroy() {
         socket.disconnect()
+        LocalBroadcastManager.getInstance(this).unregisterReceiver(userDataChangedReceiver)
         super.onDestroy()
     }
 
@@ -111,6 +111,17 @@ class MainActivity : AppCompatActivity() {
                 .setNegativeButton("Cancel"){ dialog, which ->
                 }
                 .show()
+        }
+    }
+
+    private val onNewChannel = Emitter.Listener { args ->
+        runOnUiThread{
+            val channelName = args[0] as String
+            val channelDesc = args[1] as String
+            val channelId = args[2] as String
+
+            val newChannel = Channel(channelName, channelDesc, channelId)
+            MessageService.channels.add(newChannel)
         }
     }
 
