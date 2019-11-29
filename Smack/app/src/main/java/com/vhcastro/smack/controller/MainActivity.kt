@@ -8,7 +8,10 @@ import android.graphics.Color
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import android.view.View
+import android.view.inputmethod.InputMethodManager
+import android.widget.EditText
 import androidx.appcompat.app.ActionBarDrawerToggle
+import androidx.appcompat.app.AlertDialog
 import androidx.core.view.GravityCompat
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.vhcastro.smack.R
@@ -33,6 +36,7 @@ class MainActivity : AppCompatActivity() {
         )
         drawer_layout.addDrawerListener(toggle)
         toggle.syncState()
+        hideKeyboard()
 
         LocalBroadcastManager.getInstance(this).registerReceiver(userDataChangedReceiver, IntentFilter(BROADCAST_USER_DATA_CHANGED))
     }
@@ -73,10 +77,35 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun addChannelClicked(view: View){
+        if(AuthService.isLoggedIn){
+            val builder = AlertDialog.Builder(this)
+            val dialogView = layoutInflater.inflate(R.layout.add_channel_dialog, null)
 
+            builder.setView(dialogView)
+                .setPositiveButton("Add"){ dialog, which ->
+                    val nameTextField =  dialogView.findViewById<EditText>(R.id.addChannelNameText)
+                    val descTextField =  dialogView.findViewById<EditText>(R.id.addChannelDescText)
+
+                    val channelName = nameTextField.text.toString()
+                    val channelDesc = descTextField.text.toString()
+                    hideKeyboard()
+                }
+                .setNegativeButton("Cancel"){ dialog, which ->
+                    hideKeyboard()
+                }
+                .show()
+        }
     }
 
     fun sendMessageBtnClicked(view: View){
 
+    }
+
+    fun hideKeyboard(){
+        val inputManager = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+
+        if(inputManager.isAcceptingText){
+            inputManager.hideSoftInputFromWindow(currentFocus?.windowToken, 0)
+        }
     }
 }
