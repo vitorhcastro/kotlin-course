@@ -33,7 +33,7 @@ class MainActivity : AppCompatActivity() {
     val socket = IO.socket(SOCKET_URL)
     lateinit var channelAdapter: ArrayAdapter<Channel>
 
-    private fun setupAdapters(){
+    private fun setupAdapters() {
         channelAdapter = ArrayAdapter(this, android.R.layout.simple_list_item_1, MessageService.channels)
         channel_list.adapter = channelAdapter
     }
@@ -53,10 +53,15 @@ class MainActivity : AppCompatActivity() {
         drawer_layout.addDrawerListener(toggle)
         toggle.syncState()
         setupAdapters()
+
+        if(App.prefs.isLoggedIn){
+            AuthService.findUserByEmail(this){}
+        }
     }
 
     override fun onResume() {
         LocalBroadcastManager.getInstance(this).registerReceiver(userDataChangedReceiver, IntentFilter(BROADCAST_USER_DATA_CHANGED))
+
         super.onResume()
     }
 
@@ -68,7 +73,7 @@ class MainActivity : AppCompatActivity() {
 
     private val userDataChangedReceiver = object : BroadcastReceiver(){
         override fun onReceive(context: Context?, intent: Intent?) {
-            if(AuthService.isLoggedIn){
+            if(App.prefs.isLoggedIn){
                 usernameNavHeader.text = UserDataService.name
                 userEmailNavHeader.text = UserDataService.email
                 val resourceId = resources.getIdentifier(UserDataService.avatarName, "drawable", packageName)
@@ -77,7 +82,7 @@ class MainActivity : AppCompatActivity() {
                 loginBtnNavHeader.text = "Logout"
 
                 MessageService.getChannels(context!!) { complete ->
-                    if(complete){
+                    if (complete) {
                         channelAdapter.notifyDataSetChanged()
                     }
                 }
@@ -94,7 +99,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun loginBtnNavClicked(view: View){
-        if(AuthService.isLoggedIn){
+        if(App.prefs.isLoggedIn){
             UserDataService.logout()
             loginBtnNavHeader.text = "Login"
             usernameNavHeader.text = ""
@@ -108,7 +113,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun addChannelClicked(view: View){
-        if(AuthService.isLoggedIn){
+        if (App.prefs.isLoggedIn) {
             val builder = AlertDialog.Builder(this)
             val dialogView = layoutInflater.inflate(R.layout.add_channel_dialog, null)
 
