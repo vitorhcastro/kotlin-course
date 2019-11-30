@@ -1,7 +1,11 @@
 package com.vhcastro.smack.services
 
+import android.content.Context
+import android.content.Intent
 import android.graphics.Color
+import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.vhcastro.smack.controller.App
+import com.vhcastro.smack.utilities.BROADCAST_USER_DATA_CHANGED
 import java.util.*
 
 object UserDataService {
@@ -31,7 +35,7 @@ object UserDataService {
         return Color.rgb(r, g, b)
     }
 
-    fun logout(){
+    fun logout(context: Context){
         id = ""
         avatarColor = ""
         avatarName = ""
@@ -40,5 +44,9 @@ object UserDataService {
         App.prefs.authToken = ""
         App.prefs.userEmail = ""
         App.prefs.isLoggedIn = false
+        MessageService.clearMessages()
+        MessageService.clearChannels()
+        val userDataChanged = Intent(BROADCAST_USER_DATA_CHANGED)
+        LocalBroadcastManager.getInstance(context).sendBroadcast(userDataChanged)
     }
 }

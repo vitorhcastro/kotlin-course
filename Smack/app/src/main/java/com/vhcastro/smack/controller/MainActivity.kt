@@ -5,6 +5,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.graphics.Color
+import android.opengl.Visibility
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import android.view.View
@@ -90,21 +91,42 @@ class MainActivity : AppCompatActivity() {
                 userImageNavHeader.setImageResource(resourceId)
                 userImageNavHeader.setBackgroundColor(UserDataService.returnAvatarColor(UserDataService.avatarColor))
                 loginBtnNavHeader.text = "Logout"
+                sendMessageBtn.isClickable = true
+                sendMessageBtn.visibility = View.VISIBLE
+                messageTextField.visibility = View.VISIBLE
 
                 MessageService.getChannels { complete ->
                     if (complete) {
                         if(MessageService.channels.any()){
                             selectedChannel = MessageService.channels.first()
                             channelAdapter.notifyDataSetChanged()
+                            updateWithChannel()
                         }
                     }
                 }
+            } else {
+                loginBtnNavHeader.text = "Login"
+                usernameNavHeader.text = ""
+                userEmailNavHeader.text = ""
+                userImageNavHeader.setImageResource(R.drawable.profiledefault)
+                userImageNavHeader.setBackgroundColor(Color.TRANSPARENT)
+                sendMessageBtn.isClickable = false
+                sendMessageBtn.visibility = View.INVISIBLE
+                messageTextField.visibility = View.INVISIBLE
+                selectedChannel = null
+                mainChannelName.text = "Please Log In"
             }
         }
     }
 
     fun updateWithChannel(){
         mainChannelName.text = "#${selectedChannel?.name}"
+        if(selectedChannel != null){
+            MessageService.getMessages(selectedChannel!!.id){ complete ->
+                if (complete){
+                }
+            }
+        }
     }
 
     override fun onBackPressed() {
@@ -117,12 +139,7 @@ class MainActivity : AppCompatActivity() {
 
     fun loginBtnNavClicked(view: View){
         if(App.prefs.isLoggedIn){
-            UserDataService.logout()
-            loginBtnNavHeader.text = "Login"
-            usernameNavHeader.text = ""
-            userEmailNavHeader.text = ""
-            userImageNavHeader.setImageResource(R.drawable.profiledefault)
-            userImageNavHeader.setBackgroundColor(Color.TRANSPARENT)
+            UserDataService.logout(this)
         } else {
             val loginIntent = Intent(this, LoginActivity::class.java)
             startActivity(loginIntent)
@@ -150,30 +167,35 @@ class MainActivity : AppCompatActivity() {
     }
 
     private val onNewChannel = Emitter.Listener { args ->
-        runOnUiThread{
-            val channelName = args[0] as String
-            val channelDesc = args[1] as String
-            val channelId = args[2] as String
+        runOnUiThread {
+            if(App.prefs.isLoggedIn) {
+                val channelName = args[0] as String
+                val channelDescription = args[1] as String
+                val channelId = args[2] as String
 
-            val newChannel = Channel(channelName, channelDesc, channelId)
-            MessageService.channels.add(newChannel)
-            channelAdapter.notifyDataSetChanged()
+                val newChannel = Channel(channelName, channelDescription, channelId)
+                MessageService.channels.add(newChannel)
+                channelAdapter.notifyDataSetChanged()
+            }
         }
     }
 
     private val onNewMessage = Emitter.Listener { args ->
         runOnUiThread {
-            val message = args[0] as String
-            val channelId = args[2] as String
-            val username = args[3] as String
-            val userAvatar = args[4] as String
-            val userAvatarColor = args[5] as String
-            val id = args[6] as String
-            val timeStamp = args[7] as String
+            if(App.prefs.isLoggedIn){
+                val channelId = args[2] as String
+                if(channelId == selectedChannel?.id){
+                    val message = args[0] as String
+                    val username = args[3] as String
+                    val userAvatar = args[4] as String
+                    val userAvatarColor = args[5] as String
+                    val id = args[6] as String
+                    val timeStamp = args[7] as String
 
-
-            val newMessage = Message(message, username, channelId, userAvatar, userAvatarColor, id, timeStamp)
-            MessageService.messages.add(newMessage)
+                    val newMessage = Message(message, username, channelId, userAvatar, userAvatarColor, id, timeStamp)
+                    MessageService.messages.add(newMessage)
+                }
+            }
         }
     }
 
@@ -191,7 +213,7 @@ class MainActivity : AppCompatActivity() {
     private fun hideKeyboard() {
         val inputManager = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
 
-        if(inputManager.isAcceptingText){
+        if (inputManager.isAcceptingText) {
             inputManager.hideSoftInputFromWindow(currentFocus?.windowToken, 0)
         }
     }

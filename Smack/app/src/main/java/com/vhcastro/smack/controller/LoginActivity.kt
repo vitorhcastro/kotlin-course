@@ -1,11 +1,9 @@
 package com.vhcastro.smack.controller
 
-import android.content.Context
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
-import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
 import com.vhcastro.smack.R
 import com.vhcastro.smack.services.AuthService
@@ -62,13 +60,5 @@ class LoginActivity : AppCompatActivity() {
         }
         loginBtn.isEnabled = !spinnerVisible
         loginCreateUserBtn.isEnabled = !spinnerVisible
-    }
-
-    fun hideKeyboard(){
-        val inputManager = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-
-        if(inputManager.isAcceptingText){
-            inputManager.hideSoftInputFromWindow(currentFocus?.windowToken, 0)
-        }
     }
 }
