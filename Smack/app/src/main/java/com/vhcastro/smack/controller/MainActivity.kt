@@ -17,6 +17,7 @@ import androidx.core.view.GravityCompat
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.vhcastro.smack.R
 import com.vhcastro.smack.model.Channel
+import com.vhcastro.smack.model.Message
 import com.vhcastro.smack.services.AuthService
 import com.vhcastro.smack.services.MessageService
 import com.vhcastro.smack.services.UserDataService
@@ -46,6 +47,7 @@ class MainActivity : AppCompatActivity() {
         setSupportActionBar(toolbar)
         socket.connect()
         socket.on("channelCreated", onNewChannel)
+        socket.on("messageCreated", onNewMessage)
 
         val toggle = ActionBarDrawerToggle(
             this, drawer_layout, toolbar,
@@ -159,7 +161,30 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    private val onNewMessage = Emitter.Listener { args ->
+        runOnUiThread {
+            val message = args[0] as String
+            val channelId = args[2] as String
+            val username = args[3] as String
+            val userAvatar = args[4] as String
+            val userAvatarColor = args[5] as String
+            val id = args[6] as String
+            val timeStamp = args[7] as String
+
+
+            val newMessage = Message(message, username, channelId, userAvatar, userAvatarColor, id, timeStamp)
+            MessageService.messages.add(newMessage)
+        }
+    }
+
     fun sendMessageBtnClicked(view: View){
+        if(App.prefs.isLoggedIn && messageTextField.text.isNotEmpty() && selectedChannel != null){
+            val userId = UserDataService.id
+            val channel = selectedChannel!!.id
+            val message = messageTextField.text
+            socket.emit("newMessage", message, userId, channel, UserDataService.name, UserDataService.avatarName, UserDataService.avatarColor)
+            messageTextField.text.clear()
+        }
         hideKeyboard()
     }
 
