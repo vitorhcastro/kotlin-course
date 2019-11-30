@@ -5,18 +5,19 @@ import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.graphics.Color
-import android.opengl.Visibility
 import android.os.Bundle
-import androidx.appcompat.app.AppCompatActivity
 import android.view.View
 import android.view.inputmethod.InputMethodManager
 import android.widget.ArrayAdapter
 import android.widget.EditText
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AlertDialog
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.GravityCompat
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.vhcastro.smack.R
+import com.vhcastro.smack.adapters.MessageAdapter
 import com.vhcastro.smack.model.Channel
 import com.vhcastro.smack.model.Message
 import com.vhcastro.smack.services.AuthService
@@ -35,11 +36,17 @@ class MainActivity : AppCompatActivity() {
 
     val socket = IO.socket(SOCKET_URL)
     lateinit var channelAdapter: ArrayAdapter<Channel>
+    lateinit var messageAdapter: MessageAdapter
     var selectedChannel : Channel? = null
 
     private fun setupAdapters() {
         channelAdapter = ArrayAdapter(this, android.R.layout.simple_list_item_1, MessageService.channels)
         channel_list.adapter = channelAdapter
+
+        messageAdapter = MessageAdapter(this, MessageService.messages)
+        messageListView.adapter = messageAdapter
+        val layoutManager = LinearLayoutManager(this)
+        messageListView.layoutManager = layoutManager
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -120,10 +127,15 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun updateWithChannel(){
+        MessageService.clearMessages()
         mainChannelName.text = "#${selectedChannel?.name}"
         if(selectedChannel != null){
             MessageService.getMessages(selectedChannel!!.id){ complete ->
                 if (complete){
+                    messageAdapter.notifyDataSetChanged()
+                    if (messageAdapter.itemCount > 0){
+                        messageListView.smoothScrollToPosition(messageAdapter.itemCount - 1)
+                    }
                 }
             }
         }
@@ -140,6 +152,8 @@ class MainActivity : AppCompatActivity() {
     fun loginBtnNavClicked(view: View){
         if(App.prefs.isLoggedIn){
             UserDataService.logout(this)
+            channelAdapter.notifyDataSetChanged()
+            messageAdapter.notifyDataSetChanged()
         } else {
             val loginIntent = Intent(this, LoginActivity::class.java)
             startActivity(loginIntent)
@@ -194,6 +208,8 @@ class MainActivity : AppCompatActivity() {
 
                     val newMessage = Message(message, username, channelId, userAvatar, userAvatarColor, id, timeStamp)
                     MessageService.messages.add(newMessage)
+                    messageAdapter.notifyDataSetChanged()
+                    messageListView.smoothScrollToPosition(messageAdapter.itemCount - 1)
                 }
             }
         }
@@ -203,7 +219,7 @@ class MainActivity : AppCompatActivity() {
         if(App.prefs.isLoggedIn && messageTextField.text.isNotEmpty() && selectedChannel != null){
             val userId = UserDataService.id
             val channel = selectedChannel!!.id
-            val message = messageTextField.text
+            val message = messageTextField.text.toString()
             socket.emit("newMessage", message, userId, channel, UserDataService.name, UserDataService.avatarName, UserDataService.avatarColor)
             messageTextField.text.clear()
         }
