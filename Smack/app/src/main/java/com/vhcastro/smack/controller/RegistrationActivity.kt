@@ -58,11 +58,16 @@ class RegistrationActivity : AppCompatActivity() {
         val email = registrationEmailText.text.toString()
         val password = registrationPasswordText.text.toString()
         if(!username.isNullOrBlank() && !email.isNullOrBlank() && !password.isNullOrBlank()){
-            AuthService.registerUser(this, email, password) { registerSuccess ->
+            AuthService.registerUser(email, password) { registerSuccess ->
                 if (registerSuccess){
-                    AuthService.loginUser(this, email, password) { loginSuccess ->
+                    AuthService.loginUser(email, password) { loginSuccess ->
                         if (loginSuccess){
-                            AuthService.createUser(this, username, email, userAvatar, avatarColor){ createSuccess ->
+                            AuthService.createUser(
+                                username,
+                                email,
+                                userAvatar,
+                                avatarColor
+                            ){ createSuccess ->
                                 if(createSuccess){
                                     val userDataChanged = Intent(BROADCAST_USER_DATA_CHANGED)
                                     LocalBroadcastManager.getInstance(this).sendBroadcast(userDataChanged)

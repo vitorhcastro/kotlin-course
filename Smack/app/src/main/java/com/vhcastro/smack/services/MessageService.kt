@@ -1,10 +1,8 @@
 package com.vhcastro.smack.services
 
-import android.content.Context
 import android.util.Log
 import com.android.volley.Response
 import com.android.volley.toolbox.JsonArrayRequest
-import com.android.volley.toolbox.Volley
 import com.vhcastro.smack.controller.App
 import com.vhcastro.smack.model.Channel
 import com.vhcastro.smack.utilities.URL_GET_CHANNELS
@@ -14,8 +12,9 @@ object MessageService {
 
     val channels = ArrayList<Channel>()
 
-    fun getChannels(context: Context, complete: (Boolean) -> Unit){
-        val channelsRequest = object : JsonArrayRequest(Method.GET, URL_GET_CHANNELS, null, Response.Listener {response ->
+    fun getChannels(complete: (Boolean) -> Unit) {
+
+        val channelsRequest = object : JsonArrayRequest(Method.GET, URL_GET_CHANNELS, null, Response.Listener { response ->
             try {
                 for(x in 0 until response.length()){
                     val channel = response.getJSONObject(x)
